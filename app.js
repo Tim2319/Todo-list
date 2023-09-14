@@ -12,7 +12,8 @@ app.get('/', (req, res) => {
 
 app.get('/todos', (req,res) => {
     return Todo.findAll()
-    .then ((todos) => res.send( {todos} ))
+    .then ((todos) => res.send({ todos }))
+    .catch((err) => res.status(422).json(err))
 })
 
 app.get('/todos/new', (req, res) => {
