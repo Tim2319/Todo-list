@@ -11,22 +11,33 @@ app.engine('.hbs', engine({ extname: '.hbs'}))
 app.set('view engine', '.hbs')
 app.set('views', './views')
 
+app.use(express.urlencoded({ extname: 'true'}))
+
 app.get('/', (req, res) => {
     res.render('index')
 })
 
 app.get('/todos', (req,res) => {
-    return Todo.findAll()
-    .then ((todos) => res.send({ todos }))
+    return Todo.findAll({
+        attributes: ['id','name'],
+        raw: true
+    })
+        .then ((todos) => { 
+            console.log(todos)
+            return res.render('todos', { todos })
+        })
     .catch((err) => res.status(422).json(err))
 })
 
 app.get('/todos/new', (req, res) => {
-    res.send('get todo form')
+    return res.render('new')
 })
 
 app.post('/todos', (req, res) => {
-    res.send('add todo')
+    const name = req.body.name
+
+    return Todo.create({ name })
+        .then(() => res.redirect('/todos'))
 })
 
 app.get('/todos/:id', (req, res) => {
